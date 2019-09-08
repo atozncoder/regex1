@@ -1,0 +1,43 @@
+Additional Information and Resources
+
+You are an employee at EtherCloud, a web hosting company. There has been a push to migrate all internal documentation to Latex, and it has fallen to you to convert some files. A few files in particular are oddly formatted. Using a sed script and the provided example file, mail-forwarding.txt, create a script that completes the following tasks:
+
+    Add the following to the top of the document:
+
+      \documentclass{article}
+      \usepackage{hyperref}
+      \begin{document}
+
+    Encase the first line in a /title{NAME} tag
+    Convert all sections starting with Roman numerals to use \section{NAME}; do not keep the Roman numerals (Roman numerals use the following letters: I V X L C D M
+    Encase all lines starting with [root@red-hat ~]# in code blocks (\begin{verbatim} and \end{verbatim}; note that the ~ can be alternate text
+        There are some instances where two lines start with [root@red-hat ~]# immediately after one another; use sed's N functionality to write this portion of the script
+    Any lines beginning with four spaces or a tab should be contained in code blocks; it is acceptable for each line to have its own code block tags since each line in a different setting
+    Format any file names ending with .cf to use /texttt{TEXT} tags
+    Change anything encased in backtics to use /texttt{TEXT} tags
+    At the end of the document add \end{document}; this can be done by using $ a <APPENDED TEXT>
+
+Save the script as latex.sed and the converted file as mail-forwarding.txt.
+
+
+following is the latex.sed:
+
+#! /usr/bin/sed
+
+1s/(.+)/\\documentclass{article}\n\\usepackage{hyperref}\n\\begin{document}\n\\title{\1}/
+s/^[IVXLDCM]+\. (.+)/\\section{\1}/
+/\[root@red-hat.+?\]#/ {
+  N
+  s/(\[root@red-hat.+?\]#.+(\n\[root@red-hat.+?\]#.+)?)/\\begin{verbatim}\n\1\n\\end{verbatim}/
+}
+s/(\t|    )(.+)/\\begin{verbatim}\n\2\n\\end{verbatim}/
+s/(\b\w+\.cf\b)/texttt{\1}/g
+s/`(.+?)`/\\texttt{\1}/g
+$ a \\\end{document}
+
+
+
+Run it:
+
+sed -E -f latex.sed mail-forwarding.txt > mail-forwarding.latex
+

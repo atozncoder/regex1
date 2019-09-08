@@ -1,0 +1,113 @@
+## Regex for all non D, non digit and non space for the first char 
+## and non E, non digit and non space for the second char
+grep -P "\b[^D\d\s][^E\d\s]\b" customer-data.txt
+
+# Capturing Groups
+
+## Regex for all heading h2 and h3 elements in HTML 
+grep -o -P "<([Hh][2-3]).+?>.*?<\/\1>" study-guide.html | sed 's/<[^>]*>//g' > toc.txt
+
+### Named groups:
+
+Python:
+<(?P<tag>[Hh][2-3]).+?>
+Ref:
+<\/(?P=tag)>
+
+
+.NET
+<(?<tag>[Hh][2-3]).+?>
+<(?'tag'[Hh][2-3]).+?>
+Ref:
+<\/\k<tag>>
+<\/\k'tag'>
+
+
+PCRE
+<(?P<tag>[Hh][2-3]).+?>
+<(?<tag>[Hh][2-3]).+?>
+<(?'tag'[Hh][2-3]).+?>
+Ref:
+<\/(?P=tag)>	<\/\g{tag}>
+<\/\k<tag>>	<\/\k{tag}>
+	<\/\k'tag'>
+
+Example with apostrophes (regex needs to be inside double quotes):
+grep -o -P "<(?'tag'[Hh][2-3]).+?>.*?<\/\k'tag'>" study-guide.html | sed 's/<[^>]*>//g'
+# Same with curly brackets and apostrophes in Perl
+grep -o -P "<(?'tag'[Hh][2-3]).+?>.*?<\/\g{tag}>" study-guide.html | sed 's/<[^>]*>//g'
+
+###Non capturing groups
+# not included in the back references
+# perl command - prints capptured group
+perl -lne '/(?:<[Hh][2-3].*?>)(.*?)(?:<\/[Hh][2-3]>)/ && print $1' study-guide.html
+
+Lab exercise command:(capture all URLs and Referrers)
+perl -lne '/GET (\/\w+?) HTTP\/1\.0" 200 \d{4} "https?:\/\/(?:www\.)?(\w[a-zA-Z0-9\-]*\.\w{2,53}(?:\/\w[a-zA-Z0-9\-]*)?)/ && print "Page: $1\nReferrer: $2\n"' access-logs > referrers.txt
+
+
+### Lookaheads
+# Positive
+grep -P '(\d{5})(?=\-\d{4})' customer-data.txt
+# Negative
+grep -P 'linuxacademy\.com(?!\/blog)'  access-logs
+
+### Lookbehind
+#Positive
+grep -Po '(?<=<li><code>).+?(?=<\/code>)' study-guide.html
+#Negative
+grep -Po '(?<!<li><code>)(?<=<code>).*?(?=<\/code>)' study-guide.html
+
+Lookaheads and Lookbehinds cannot use * or + They have to be of fixed length. If + or * used we get error 'not fixed lengrth'
+
+
+Excersize:
+Remove all spaces at the beggingin of line from the file:
+sed -i 's/^\s*//g' highstate
+
+-P the engine
+-z multiline regex
+-o only print matches (without it prints everythng and highlights the matches)
+(?<=-{10})\n__id__:(?:\n|.) - positive lookbehind that starts with ----------\n__id__(\n or anything else)
+grep -Pzo '(?<=-{10})\n__id__:(?:\n|.)+?(?=changes:)' highstate > sls-report.txt
+
+
+### If Conditionals
+
+Search all (ID or Function) if it is function it should be \w+?\.\w+ after it 
+							else it should be \w+ after it
+grep -P '(ID|(Function)): (?(2)\w+?\.\w+|\w+)' highstate 
+
+Named and Nested Conditionals
+
+Search all (ID or Function or Duration) 
+				Functio is named fn, Duration is named dur
+				If it is fn it should be followed by \w+?.\w+
+				else if it is dur it should be followed by \d+?\.\d ms
+				else it should be followed by \w+
+
+grep -P '(ID|(?<fn>Function)|(?<dur>Duration)): (?(fn)\w+?\.\w+|(?(dur)\d+?\.\d+ ms|\w+))' highstate
+
+Exercise:
+grep -P '^From: \w+ <\w+@\w+\.\w+>' emaillist.mbox
+grep -P '^Subject: .+' emaillist.mbox
+
+grep -P '^((From)|Subject): (?(2)\w+ <\w+@\w+\.\w{2,63}>|.+)' emaillist.mbox > mailing-list-report.txt
+
+### Using a sed Script to Generate Human-Readable Files - Part 1
+
+# In all lines replace spaces at the beggining with nothing:
+sed -r 's/^\s+//' hs.test.json
+
+# In the first line, minion name 
+sed -r '1s/(.*?):/RUN REPORT: \1\n/' hs.test.json
+
+# Executing sed file
+sed -E -f minionreport.sed hs.test.json
+
+# Delete dashes /d below can be used when we want to delete and not replace 
+sed -r '/-{10}/d' hs.test.json
+
+#Delete all lines starting with regex
+# Please note that it will delete the whole lines even thou the regex only matches the beginning of the lines:
+sed -r '/^[a-z]+_\|/d' hs.test.json
