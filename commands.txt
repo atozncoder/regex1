@@ -111,3 +111,10 @@ sed -r '/-{10}/d' hs.test.json
 #Delete all lines starting with regex
 # Please note that it will delete the whole lines even thou the regex only matches the beginning of the lines:
 sed -r '/^[a-z]+_\|/d' hs.test.json
+
+
+### Using Perl to Convert an HTML Document
+# Executing Perl file
+perl -f html-to-md.pl study-guide.html
+
+## Excersize
