@@ -1,0 +1,29 @@
+
+Additional Information and Resources
+
+EtherCloud's internal documentation system is no longer working! As the web hosting company grows, keeping documentation in a self-maintained website is no longer working. Instead, it's been requested that documents are written in Latex so they can be added to a proper documentation repository. The only problem is what to do with the existing documents. By using the provided regex cheat sheet document, craft a Perl script to convert all existing HTML documents to Latex.
+
+If you're unfamiliar with Latex, use the following table to determine how to precede:
+HTML Tag 	Latex
+H1 	\title{TITLE}
+H2 	\section{SECTIONNAME}
+H3 	\subsection{SECTIONNAME}
+Unordered Lists 	\begin{itemize} AND \end{itemize}
+List items 	\item
+Italics 	\textit{TEXT}
+Inline code 	texttt{TEXT}
+Code blocks 	\begin{verbatim} AND \end{verbatim}
+
+Additionally, all documents must start with:
+
+\documentclass{article}
+\usepackage{hyperref}
+\begin{document}
+
+And end with:
+
+\end{document}
+
+Note that if you're having trouble getting any backslashes to show up in your output, use two backslashes in its place (i.e., s/<ul>/\\begin{itemize}/).
+
+Save the script as html-to-latex.pl. Run it against the regexcs.html file and save the resulting output as regexcs.latex.

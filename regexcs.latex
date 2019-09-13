@@ -1,0 +1,270 @@
+/title{Mastering Regular Expressions}
+/section{Introducing Regular Expressions}
+/subsection{What Are Regular Expressions?}
+\begin{itemize}
+\item “Pattern-matching” language
+\item Generalize what to look for, then match any characters that fit that description
+\item Commonly seen in:
+\begin{itemize}
+\item Web forms
+\item Find-and-replace features
+\item Parsing logs or any kind of text
+\end{itemize}
+\end{itemize}
+/subsection{Tools}
+\begin{itemize}
+\item Where do we write regex?
+\begin{itemize}
+\item In programming languages (Perl, Java, .NET, etc.; most support some kind of regex)
+\item With text processing applications (texttt{sed}, <code>awk</code>, etc.)
+\item In other applications (InDesign)
+\end{itemize}
+\item How can we test what we write?
+\begin{itemize}
+\item Online regex testing websites:
+\begin{itemize}
+\item \href{https://regexr.com/}{RegExr}
+\item \href{https://regex101.com/}{Regex101}
+\item \href{https://www.regexpal.com/}{Regex Pal}
+\end{itemize}
+\end{itemize}
+\end{itemize}
+/subsection{The Regular Expressions Engine}
+\begin{itemize}
+\item Matchs the regex given to the left-most match in the provided text
+\item There is much more than a single engine
+\item Most engines are based on one of two algorithms:
+\begin{itemize}
+\item Nondeterministic Finite Automaton
+\begin{itemize}
+\item The regex expression can reference back to earlier in the expression
+\begin{itemize}
+\item texttt{\d{1,3}}: The <code>{1,3}</code> references back to the <code>\d</code>
+\end{itemize}
+\item Seen in:
+\begin{itemize}
+\item Perl
+\item Python
+\item texttt{sed}
+\end{itemize}
+\end{itemize}
+\item Deterministic Finite Automaton
+\begin{itemize}
+\item The regex expression \textit{cannot} reference itself later in the expression
+\begin{itemize}
+\item texttt{\d{1,3}} would fail, since the <code>{1,3}</code> references the <code>\d</code> before it
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{itemize}
+/subsection{Standards}
+\begin{itemize}
+\item IEEE POSIX standards:
+\begin{itemize}
+\item SRE: Simple Regular Expressions; deprecated for BRE
+\item BRE: Basic Regular Expressions
+\item ERE: Extended Regular Expressions
+\item ERE builds off BRE:
+\begin{itemize}
+\item Added repetition and alternation characters (texttt{+}, <code>?</code>, <code>|</code>)
+\item In BRE, texttt{{ }} and <code>( )</code> metacharacters must be written as <code>\{ \}</code> and <code>\( \)</code>
+\end{itemize}
+\item Uses texttt{[:digit:]} “bracket expressions” versus <code>\d</code> character classes
+\end{itemize}
+\item Perl Compatible Regular Expressions
+\begin{itemize}
+\item Inspiration for Java, .NET, Python regex
+\item Supports some Python regex implementations
+\item Perl does not use all PCRE standards
+\end{itemize}
+\item Examples with texttt{grep}:
+\begin{itemize}
+\item \begin{verbatim}
+Match IP addresses in texttt{access-log} file with PCRE (<code>-P</code>):
+\end{verbatim}
+\begin{verbatim}
+$ grep -P ‘...’ access-log
+\end{verbatim}
+\item \begin{verbatim}
+Match IP address in texttt{access-log} file with ERE (<code>-E</code>):
+\end{verbatim}
+\begin{verbatim}
+$ grep -E ‘[[:digit:]]{1,3}.[[:digit:]]{1,3}.[[:digit:]]{1,3}.[[:digit:]]{1,3}’ access-log
+\end{verbatim}
+\end{itemize}
+\end{itemize}
+/section{Basic Regular Expressions}
+/subsection{Literal Pattern Matching}
+\begin{itemize}
+\item Regex isn’t all complicated token and metacharacters
+\item Literal, plain text can be part of the expression
+\item Be conscious of using a metacharacter when you want a literal character
+\end{itemize}
+/subsection{Matching Characters and Words}
+\begin{itemize}
+\item texttt{\w}: Match “word” characters (A-Z, a-z, 0-9)
+\item texttt{\W}: Match non-word characters (anything that is not A-Z, a-z, 0-9)
+\item Encase characters in square brackets to provide a range or list:
+\begin{itemize}
+\item texttt{[a-z]}: Match any letter between <code>a</code> and <code>z</code>, lowercase only
+\item texttt{[C-K]}: Match any letter between <code>C</code> and <code>K</code>, uppercase only
+\item texttt{[ACK]}: Match either <code>A</code>, <code>C</code>, or <code>K</code>
+\end{itemize}
+\end{itemize}
+/subsection{Matching Digits}
+\begin{itemize}
+\item texttt{\d}: Match any digit, 0-9
+\item texttt{\D}: Match anything that is not a digit (0-9)
+\item Encase in square brackets to provide a range or list:
+\begin{itemize}
+\item texttt{[0-9]}: Match any digit between <code>0</code> and <code>9</code>
+\item texttt{[4-7]}: Match any digit between <code>'4</code> and <code>7</code> (<code>4</code>, <code>5</code>, <code>6</code>, <code>7</code>)
+\item texttt{[347]}: Match either <code>3</code>, <code>4</code>, or <code>7</code>
+\end{itemize}
+\end{itemize}
+/subsection{Matching Whitespace}
+\begin{itemize}
+\item texttt{\s}: Match any whitespace characters (tab, space, newline, carriage return)
+\item texttt{\S}: Match any non-whitespare characters
+\item texttt{\t}: Match any tabs
+\item texttt{\n}: Match any newlines
+\item texttt{\r}: Match any carriage returns
+\end{itemize}
+/section{More Regular Expressions}
+/subsection{Location}
+\begin{itemize}
+\item texttt{^}: Match start of line
+\item texttt{$}: Match end of line
+\item texttt{^\s+$}: Match blank line
+\end{itemize}
+/subsection{Boundaries}
+\begin{itemize}
+\item texttt{\b}: Does not match anything, but marks a boundary; at the start of an expression it ensures the previous token is not a word character (<code>\w</code>), while at the end of an expression, it ensures the next token is not a word character
+\item texttt{\B}: Does not match anything, but marks a boundary; at the end of an expression it ensures the previous token is not a non-word character (<code>\W</code>), while at the end of an expression, it ensures the next token is not a non-word character
+\item texttt{\&lt; ... \&gt;}: Some older programs (such as Vim) use <code>\&lt;</code> and <code>\&gt;</code> to mark boundaries; these work as boundaries against both word and non-word characters (<code>\w</code> and <code>\W</code>)
+\end{itemize}
+/subsection{Alternation}
+\begin{itemize}
+\item texttt{|}: “Or”; match one of the provided subexpressions; there can be more than two subexpressions
+\begin{itemize}
+\item texttt{(NJ|PA)}: Match <code>NJ</code> or <code>PA</code>
+\end{itemize}
+\end{itemize}
+/subsection{Repetition}
+\begin{itemize}
+\item texttt{?}: Make preceding token optional; can be an individual character or subexpression contained in a group
+\item texttt{+}: Repeat preceding token or subexpression one or more times
+\item texttt{*}: Repeat preceding token or subexpression zero or more times
+\end{itemize}
+/subsection{Possessive Quantifiers}
+\begin{itemize}
+\item texttt{.}: Wildcard; match any single character
+\item When using repetition (texttt{+}, <code>*</code>) alongside the <code>.</code> metacharacter, the regex engine will try to match as much as possible
+\begin{itemize}
+\item “Greedy” or “possessive”
+\end{itemize}
+\item Use texttt{?} after the quantifier to force the engine to match as few matches as possible
+\begin{itemize}
+\item “Ungreedy” or “lazy”
+\end{itemize}
+\end{itemize}
+/section{Classes, Groups, and Backreferences}
+/subsection{More Character Classes}
+\begin{itemize}
+\item texttt{[...]}: Anything encased in square brackets is a character class
+\begin{itemize}
+\item Commonly used for ranges texttt{[a-zA-Z0-9]}
+\end{itemize}
+\item texttt{[^...]}: Negated character class; anything encased in square brackets with a caret (<code>^</code>) cannot be matched
+\item XML, XPath, .NET, and JGSoft regex only:
+\begin{itemize}
+\item Subtract from ranges: texttt{[A-Z-[N]]} (matched <code>A-M</code>, <code>O-Z</code>; does not match <code>N</code>)
+\end{itemize}
+\end{itemize}
+/subsection{Backreferences}
+\begin{itemize}
+\item texttt{( ... )}: Create a capturing group
+\begin{itemize}
+\item Capturing groups are named in their numerical order
+\end{itemize}
+\item texttt{\#}: Reference a capturing group, where <code>#</code> is the number of the group
+\item In texttt{(H2) ... \1}, <code>(H2)</code> matches <code>H2</code>, while <code>\1</code> also matches <code>H2</code>
+\end{itemize}
+/subsection{Named Groups}
+\begin{itemize}
+\item Give backreferences names
+\item Python:
+\begin{itemize}
+\item Set named group with:
+\begin{itemize}
+\item texttt{(?P&lt;ID&gt; ... )}
+\end{itemize}
+\item Reference named group with:
+\begin{itemize}
+\item texttt{(?P=ID)}
+\end{itemize}
+\end{itemize}
+\item .NET:
+\begin{itemize}
+\item Set named group with:
+\begin{itemize}
+\item texttt{(?&lt;tag&gt; ... )}
+\item texttt{(?'tag' ... )}
+\end{itemize}
+\item Reference named group with:
+\begin{itemize}
+\item texttt{\k&lt;tag&gt;}
+\item texttt{\k'tag'}
+\end{itemize}
+\end{itemize}
+\item PCRE:
+\begin{itemize}
+\item Set named group with:
+\begin{itemize}
+\item texttt{(?P&lt;ID&gt; ... )}
+\item texttt{(?&lt;tag&gt; ... )}
+\item texttt{(?'tag' ... )}
+\end{itemize}
+\item Reference named group with:
+\begin{itemize}
+\item texttt{(?P=ID)}
+\item texttt{\k&lt;tag&gt;}
+\item texttt{\k'tag'}
+\item texttt{\k{tag}}
+\item texttt{\g{tag}}
+\end{itemize}
+\end{itemize}
+\end{itemize}
+/subsection{Non-Capturing Groups}
+\begin{itemize}
+\item texttt{(?: ... )}: Create a non-capturing group
+\item Non-capturing groups do not count when numbering capturing groups
+\end{itemize}
+/section{Lookarounds}
+/subsection{Lookaheads}
+\begin{itemize}
+\item Allows us to reference an expression and use it as a boundary
+\item texttt{(?= ... )}: A positive lookahead; the regex engine ensures this match exists as a boundary following the expression but does not capturing it
+\item texttt{(?! ... )}: A negative lookahead; the regex engine ensures this match does \textit{not} exist as a boundary following the expression
+\end{itemize}
+/subsection{Lookbehinds}
+\begin{itemize}
+\item Allows us to reference an expression and use it as a boundary
+\item texttt{(?&lt;= ... )}: A positive lookbehind; the regex engine ensures this match exists as a boundary \textit{before} the expression but does not capture it
+\item texttt{(?&lt;! ... )}: A negative lookbehind; the regex engine ensures this match does \textit{not} exist as a boundary \textit{before} the expression
+\end{itemize}
+/section{Conditionals}
+/subsection{if Confitionals}
+\begin{itemize}
+\item Allows us to reference matched text to determine how the regular expression works
+\begin{itemize}
+\item “If the expressions matches”a“, do this; if it does not, do this other thing”
+\end{itemize}
+\item texttt{(?(if)then|else)}: If the expression matches the text referenced in <code>if</code>, match the expression in <code>then</code>; if it does not match the expression in <code>else</code>.
+\end{itemize}
+/subsection{Named Conditionals}
+\begin{itemize}
+\item Allows us to use named backreferences when using conditionals
+\item When referencing that backreference in the texttt{if} state, only use the name of the reference, do not call the reference as normal (i.e., do not use <code>\g{named_ref}</code>)
+\item Otherwise works as a normal conditional
+\end{itemize}

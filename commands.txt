@@ -111,3 +111,45 @@ sed -r '/-{10}/d' hs.test.json
 #Delete all lines starting with regex
 # Please note that it will delete the whole lines even thou the regex only matches the beginning of the lines:
 sed -r '/^[a-z]+_\|/d' hs.test.json
+
+
+#### PERL
+Command to run it:
+perl -f html-to-md.pl study-guide.html > study-guilde.md
+
+The code is in the html-to-md.pl.
+
+##PERL LAB:
+The description in Using Perl to Convert HTML to Latex.txt
+
+Comamnd to run the final Script
+perl -f html-to-latex.pl regexcs.html > regexcs.latex
+
+Lab code as it was given by them with some additional ';'
+
+-----------------------------------------------------------
+print "\\documentclass{article}\n\\usepackage{hyperref}\n\\begin{document}\n";
+
+while (<>;) {
+  s/<[Hh]1 [^>;]*>;(.+?)<\/[Hh]1>;/\\title{\1}\n/;
+  s/<[Hh]2 [^>;]*>;(.+?)<\/[Hh]2>;/\\section{\1}\n\n/;
+  s/<[Hh]3 [^>;]*>;(.+?)<\/[Hh]3>;/\\subsection{\1}\n\n/;
+  s/<ul>;/\\begin{itemize}\n/;
+  s/<\/ul>;/\\end{itemize}\n\n/;
+  s/<li>;/\\item /;
+  s/<\/li>;//;
+  s/<code>;(.+?)<\/code>;/texttt{\1}/g;
+  s/<a href="(.+?)">;(.+?)<\/a>;/\\href{\1}{\2}/g;
+  s/<em>;(.+?)<\/em>;/\\textit{\1}/g;
+  if (/\+ <p>;/) { !!!!! ov je greska !!! treba da bude if (/\\item<p>/) {
+    s/<p>;//g;
+    s/<\/?p>;//g;
+  }
+  s/<p>;(.+?)<\/p>;/\\begin{verbatim}\n\1\n\\end{verbatim}\n/;
+  s/\n\n/\n/;
+  print;
+}
+
+print "\\end{document}\n";
+close;
+-----------------------------------------------------------
